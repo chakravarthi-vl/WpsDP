@@ -23,11 +23,11 @@ import org.opengis.feature.simple.SimpleFeature;
 public class Process {
 
     String overlay(String pointString, double distance) {
-        String nazvy = "Objekt:Plocha překryvu";
+        String nazvy = "Objekt:Plocha prekryvu";
         try {
 
             //SHP Read
-            ShapefileDataStore sfds = new ShapefileDataStore(new URL("file:///data/install/geoserver/geoserver-2.7.2/data_dir/data/sf/restricted.shp"));
+            ShapefileDataStore sfds = new ShapefileDataStore(new URL("file:///F:\\GeoServer285\\data_dir\\data\\sf\\restricted.shp"));
             SimpleFeatureSource fs = sfds.getFeatureSource("restricted");
 
             //double distance = 10000.0d;
@@ -51,7 +51,7 @@ public class Process {
         } catch (IOException ex2) {
             Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex2);
         }
-        return "Nalezené objekty: " + nazvy;
+        return "Nalezene objekty: " + nazvy;
     }
     
              

@@ -2,5 +2,5 @@
   <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
   <beans>
     <bean id="helloWPS" class="cz.val0065.wps.HelloWorldWps"/>
-    <bean id="PolygonTools" class="cz.val0065.wps.PolygonTools"/>
+    <bean id="OverlayWPS" class="cz.val0065.wps.OverlayWPS"/>
   </beans>
