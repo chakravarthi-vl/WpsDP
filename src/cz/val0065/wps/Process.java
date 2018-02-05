@@ -27,8 +27,17 @@ public class Process {
         try {
 
             //SHP Read
-            ShapefileDataStore sfds = new ShapefileDataStore(new URL("file:///F:\\GeoServer285\\data_dir\\data\\sf\\restricted.shp"));
-            SimpleFeatureSource fs = sfds.getFeatureSource("restricted");
+            ShapefileDataStore sfds;
+            sfds = new ShapefileDataStore(new URL("file:///F:\\GeoServer285\\data_dir\\data\\sf\\restricted.shp"));
+            SimpleFeatureSource fs;
+            fs = sfds.getFeatureSource("restricted");
+            
+            ShapefileDataStore sfds2;
+            sfds2 = new ShapefileDataStore(new URL("file:///F:\\GeoServer285\\data_dir\\data\\sf\\archsites.shp"));
+            SimpleFeatureSource fs2;
+            fs2 = sfds.getFeatureSource("archsites");
+            
+            
 
             //double distance = 10000.0d;
             GeometryFactory gf = new GeometryFactory();
@@ -38,6 +47,7 @@ public class Process {
             Polygon p1 = (Polygon) point.buffer(distance);
             
             SimpleFeatureIterator sfi = fs.getFeatures().features();
+            SimpleFeatureIterator sfi2 = fs.getFeatures().features();
             while (sfi.hasNext()) {
                 SimpleFeature sf = sfi.next();
                 MultiPolygon mp2 = (MultiPolygon) sf.getDefaultGeometry();
