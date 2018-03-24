@@ -19,126 +19,112 @@ import org.geotools.data.simple.*;
 import org.geotools.feature.FeatureCollection;
 
 /**
- * @author David
- * WPS development testing.
+ * @author David WPS development testing.
  */
-
 public class Process {
 
     String overlay(String pointString, double distance) throws MalformedURLException, IOException {
-        
+
         String nazvy = "Objekt:Plocha prekryvu";
-        
-            ShapefileDataStore sfds;
-            sfds = new ShapefileDataStore(new URL("file:///F:\\GeoServer285\\data_dir\\data\\sf\\restricted.shp"));
-            SimpleFeatureSource fs;
-            fs = sfds.getFeatureSource("restricted");
-           
-            GeometryFactory gf = new GeometryFactory();
-            String xy[] = pointString.split(" ");
-            Point point = gf.createPoint(new Coordinate(Double.parseDouble(xy[0]), Double.parseDouble(xy[1])));
-            
-            Polygon p1 = (Polygon) point.buffer(distance);
-            
-            SimpleFeatureIterator sfi = fs.getFeatures().features();
-            while (sfi.hasNext()) {
-                SimpleFeature sf = sfi.next();
-                MultiPolygon mp2 = (MultiPolygon) sf.getDefaultGeometry();
-                Polygon p2 = (Polygon) mp2.getGeometryN(0);
-                Polygon p3 = (Polygon) p2.intersection(p1);
-                nazvy = nazvy + "\n" + sf.getAttribute("cat") + ": " + p3.getArea();
-            }
+
+        ShapefileDataStore sfds;
+        sfds = new ShapefileDataStore(new URL("file:///F:\\GeoServer285\\data_dir\\data\\sf\\restricted.shp"));
+        SimpleFeatureSource fs;
+        fs = sfds.getFeatureSource("restricted");
+
+        GeometryFactory gf = new GeometryFactory();
+        String xy[] = pointString.split(" ");
+        Point point = gf.createPoint(new Coordinate(Double.parseDouble(xy[0]), Double.parseDouble(xy[1])));
+
+        Polygon p1 = (Polygon) point.buffer(distance);
+
+        SimpleFeatureIterator sfi = fs.getFeatures().features();
+        while (sfi.hasNext()) {
+            SimpleFeature sf = sfi.next();
+            MultiPolygon mp2 = (MultiPolygon) sf.getDefaultGeometry();
+            Polygon p2 = (Polygon) mp2.getGeometryN(0);
+            Polygon p3 = (Polygon) p2.intersection(p1);
+            nazvy = nazvy + "\n" + sf.getAttribute("cat") + ": " + p3.getArea();
+        }
         return "Nalezene objekty: " + nazvy;
     }
-    
-        String overlay2(String pointString, double distance) throws MalformedURLException, IOException {
+
+    String overlay2(String pointString, double distance) throws MalformedURLException, IOException {
         String nazvy = "Objekt:Plocha prekryvu";
-        
-            ShapefileDataStore sfds;
-            sfds = new ShapefileDataStore(new URL("file:///F:\\GeoServer285\\data_dir\\data\\sf\\restricted.shp"));
-            SimpleFeatureSource fs;
-            fs = sfds.getFeatureSource("restricted");
-           
-            GeometryFactory gf = new GeometryFactory();
-            String xy[] = pointString.split(" ");
-            Point point = gf.createPoint(new Coordinate(Double.parseDouble(xy[0]), Double.parseDouble(xy[1])));
-            
-            Polygon p1 = (Polygon) point.buffer(distance);
-            
-            SimpleFeatureIterator sfi = fs.getFeatures().features();
-            while (sfi.hasNext()) {
-                SimpleFeature sf = sfi.next();
-                MultiPolygon mp2 = (MultiPolygon) sf.getDefaultGeometry();
-                Polygon p2 = (Polygon) mp2.getGeometryN(0);
-                Polygon p3 = (Polygon) p2.intersection(p1);
-                nazvy = nazvy + "\n" + sf.getAttribute("cat") + ": " + p3.getArea();
-            }
+
+        ShapefileDataStore sfds1;
+        sfds1 = new ShapefileDataStore(new URL("file:///F:\\GeoServer285\\data_dir\\data\\sf\\restricted.shp"));
+        SimpleFeatureSource fs1;
+        fs1 = sfds1.getFeatureSource("restricted");
+
+        ShapefileDataStore sfds2;
+        sfds2 = new ShapefileDataStore(new URL("file:///F:\\GeoServer285\\data_dir\\data\\sf\\restricted.shp"));
+        SimpleFeatureSource fs2;
+        fs2 = sfds1.getFeatureSource("restricted");
+
+        GeometryFactory gf = new GeometryFactory();
+        String xy[] = pointString.split(" ");
+        Point point = gf.createPoint(new Coordinate(Double.parseDouble(xy[0]), Double.parseDouble(xy[1])));
+
+        Polygon p1 = (Polygon) point.buffer(distance);
+
+        SimpleFeatureIterator sfi = fs1.getFeatures().features();
+        while (sfi.hasNext()) {
+            SimpleFeature sf = sfi.next();
+            MultiPolygon mp2 = (MultiPolygon) sf.getDefaultGeometry();
+            Polygon p2 = (Polygon) mp2.getGeometryN(0);
+            Polygon p3 = (Polygon) p2.intersection(p1);
+            nazvy = nazvy + "\n" + sf.getAttribute("cat") + ": " + p3.getArea();
+        }
         return "Nalezene objekty: " + nazvy;
     }
+
+    public String lengthOfLine() throws Exception {
+
+        ShapefileDataStore sfds1;
+        sfds1 = new ShapefileDataStore(new URL("file:///F:\\GeoServer285\\data_dir\\data\\sf\\streams.shp"));
+        SimpleFeatureSource fs1;
+        fs1 = sfds1.getFeatureSource("streams");
         
-    public void length() throws Exception{
+        SimpleFeatureIterator sfi = fs1.getFeatures().features();
+        while (sfi.hasNext()) {
+            SimpleFeature sf = sfi.next();
         
-        URL url = Process.class.getResource("file:///F:\\GeoServer285\\data_dir\\data\\sf\\restricted.shp");
-        File file = new File(url.toURI());
-        
-        Map<String, Serializable> params = new HashMap<>();     
-        params.put("file", file);
-        DataStore store = DataStoreFinder.getDataStore(params);
-        
-        SimpleFeatureSource featureSource = store.getFeatureSource("restricted");
-        SimpleFeatureCollection featureCollection = featureSource.getFeatures();
-        
-        List<String> list = new ArrayList<>();
-        try (SimpleFeatureIterator iterator = featureCollection.features();){
-            while (iterator.hasNext()) {
-                list.add(iterator.next().getID());
+        }
+        return null;
+
+    }
+
+    SimpleFeatureCollection overlayWithOutput(String pointString, double distance) throws MalformedURLException, IOException {
+
+        SimpleFeatureCollection collection = null;
+
+        ShapefileDataStore sfds = new ShapefileDataStore(new URL("file:///F:\\GeoServer285\\data_dir\\data\\sf\\restricted.shp"));
+        SimpleFeatureSource sfs = sfds.getFeatureSource("restricted");
+
+        SimpleFeatureType type = sfs.getSchema();
+        GeometryFactory gf = new GeometryFactory();
+        String xy[] = pointString.split(" ");
+        Point point = gf.createPoint(new Coordinate(Double.parseDouble(xy[0]), Double.parseDouble(xy[1])));
+
+        Polygon p1 = (Polygon) point.buffer(distance);
+        List<SimpleFeature> features = new ArrayList<>(0);
+        SimpleFeatureIterator sfi = sfs.getFeatures().features();
+
+        while (sfi.hasNext()) {
+            SimpleFeature sf = sfi.next();
+            MultiPolygon mp1 = (MultiPolygon) sf.getDefaultGeometry();
+            Polygon p2 = (Polygon) mp1.getGeometryN(0);
+            Polygon p3 = (Polygon) p2.intersection(p1);
+
+            if (p3.getArea() > 0) {
+                sf.setDefaultGeometry(p3);
+                features.add(sf);
             }
         }
-        
-                System.out.println("           List Contents: " + list);
-        System.out.println("    FeatureSource  count: " + featureSource.getCount(Query.ALL));
-        System.out.println("    FeatureSource bounds: " + featureSource.getBounds(Query.ALL));
-        System.out.println("FeatureCollection   size: " + featureCollection.size());
-        System.out.println("FeatureCollection bounds: " + featureCollection.getBounds());
-        
-        
-    }
-        
-      
-    
-    
-    SimpleFeatureCollection overlayWithOutput(String pointString, double distance) throws MalformedURLException, IOException{
-        
-        SimpleFeatureCollection collection = null;
-        
-            ShapefileDataStore sfds = new ShapefileDataStore(new URL("file:///F:\\GeoServer285\\data_dir\\data\\sf\\restricted.shp"));
-            SimpleFeatureSource sfs = sfds.getFeatureSource("restricted");
-            
-            SimpleFeatureType type = sfs.getSchema();
-            GeometryFactory gf = new GeometryFactory();
-            String xy[] = pointString.split(" ");
-            Point point = gf.createPoint(new Coordinate(Double.parseDouble(xy[0]), Double.parseDouble(xy[1])));
-            
-            Polygon p1 = (Polygon) point.buffer(distance);
-            List<SimpleFeature> features = new ArrayList<>(0);
-            SimpleFeatureIterator sfi = sfs.getFeatures().features();
-            
-            while (sfi.hasNext()){
-                SimpleFeature sf = sfi.next();
-                MultiPolygon mp1 = (MultiPolygon) sf.getDefaultGeometry();
-                Polygon p2 = (Polygon) mp1.getGeometryN(0);
-                Polygon p3 = (Polygon) p2.intersection(p1);
-                
-                if (p3.getArea() > 0) {
-                    sf.setDefaultGeometry(p3);
-                    features.add(sf);
-                }
-            }
-            collection = new ListFeatureCollection(type, features);
-            
-            return collection;  
-    }
-    
-             
-}
+        collection = new ListFeatureCollection(type, features);
 
+        return collection;
+    }
+
+}
