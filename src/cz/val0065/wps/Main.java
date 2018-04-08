@@ -7,8 +7,10 @@ public class Main {
         public static void main(String[] args) throws IOException, Exception {
 
         Process proc = new Process();
+        
+        String shapeFileURL = "";
 
-        System.out.println(proc.overlay("600010 4920000", 10000.0d));
+        System.out.println(proc.overlayPolygons(shapeFileURL));
     }
     
 }
