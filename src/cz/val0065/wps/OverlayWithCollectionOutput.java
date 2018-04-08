@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package cz.val0065.wps;
+
 import java.io.IOException;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
@@ -11,10 +12,6 @@ import org.geotools.process.factory.DescribeResult;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geotools.data.simple.SimpleFeatureCollection;
 
-/**
- *
- * @author David
- */
 @DescribeProcess(title = "OverlayWithOutput", description = " ")
 public class OverlayWithCollectionOutput implements GeoServerProcess {
     

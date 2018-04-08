@@ -1,10 +1,5 @@
 package cz.val0065.wps;
 
-/**
- * @author David
- * WPS development testing.
- */
-
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;

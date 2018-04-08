@@ -18,9 +18,6 @@ import org.opengis.feature.simple.*;
 import org.geotools.data.simple.*;
 import org.geotools.feature.FeatureCollection;
 
-/**
- * @author David WPS development testing.
- */
 public class Process {
 
     String overlay(String pointString, double distance, String shapeFileURL) throws MalformedURLException, IOException {
@@ -51,7 +48,7 @@ public class Process {
         return "Nalezene objekty: " + nazvy;
     }
 
-    String overlayPolygons(String shapeFileURL) throws MalformedURLException, IOException {
+    String overlayPolygons(String shapeFileURL) throws IOException {
 
         String nazvy = "Objekt:Plocha prekryvu";
 
