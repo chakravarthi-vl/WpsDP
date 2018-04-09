@@ -45,25 +45,26 @@ public class Process {
             Polygon p3 = (Polygon) p2.intersection(p1);
             nazvy = nazvy + "\n" + sf.getAttribute("cat") + ": " + p3.getArea();
         }
-        return "Nalezene objekty: " + nazvy;
+        return "Nalezene: " + nazvy;
     }
+    
+    //ShapefileDataStoreFactory shpf = new ShapefileDataStoreFactory.ShpFileStoreFactory(new ShapefileDataStore);
 
     String overlayPolygons(String shapeFileURL) throws IOException {
 
-        String nazvy = "Objekt:Plocha prekryvu";
+        String areas = "Object : Area of overlay";
 
         ShapefileDataStore sfds;
-        sfds = new ShapefileDataStore(new URL("file:///C:\\Users\\Zuz\\Geo\\baziny.shp"));
+        sfds = new ShapefileDataStore(new URL("file:///F:\\Škola\\test_data\\lesy_cr.shp"));
 
-        //ShapefileDataStoreFactory shpf = new ShapefileDataStoreFactory.ShpFileStoreFactory(new ShapefileDataStore);
         SimpleFeatureSource fs;
-        fs = sfds.getFeatureSource("baziny");
+        fs = sfds.getFeatureSource("lesy_cr");
 
         ShapefileDataStore sfds2;
-        sfds2 = new ShapefileDataStore(new URL("file:///C:\\Users\\Zuz\\Geo\\uzemi.shp"));
+        sfds2 = new ShapefileDataStore(new URL("file:///F:\\Škola\\test_data\\chranene_uzemi_cr.shp"));
 
         SimpleFeatureSource fs2;
-        fs2 = sfds2.getFeatureSource("uzemi");
+        fs2 = sfds2.getFeatureSource("chranene_uzemi_cr");
 
         SimpleFeatureIterator sfi = fs.getFeatures().features();
         double sum = 0;
@@ -80,15 +81,17 @@ public class Process {
                 Geometry p4 = p2.intersection(p3);
                 if (p4.getArea() != 0) {
                     sum += p4.getArea();
-                    nazvy = nazvy + "\n" + p4.getArea()+ " : " + p2.getArea() + " : " + p3.getArea();
+                    areas = areas + "\n" + p4.getArea()+ " : " + p2.getArea() + " : " + p3.getArea();
                 }
             }
+            sfi2.close();
         }
+        sfi.close();
         
         sfds.dispose();
         sfds2.dispose();
-    
-        return "Nalezene objekty: " + nazvy + "\nCelkovy sucet: " + sum;
+
+        return "Objects found: " + areas + "\nTotal sum: " + sum;
     }
 
     public String lengthOfLine() throws Exception {
