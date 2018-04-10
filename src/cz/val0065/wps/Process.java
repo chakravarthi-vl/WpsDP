@@ -50,18 +50,18 @@ public class Process {
     
     //ShapefileDataStoreFactory shpf = new ShapefileDataStoreFactory.ShpFileStoreFactory(new ShapefileDataStore);
 
-    String overlayPolygons(String shapeFileURL) throws IOException {
+    String overlayPolygons() throws IOException {
 
         String areas = "Object : Area of overlay";
 
         ShapefileDataStore sfds;
-        sfds = new ShapefileDataStore(new URL("file:///F:\\Škola\\test_data\\lesy_cr.shp"));
+        sfds = new ShapefileDataStore(new URL("file:///F:\\GeoServer285\\data_dir\\data\\test_data\\lesy_cr.shp"));
 
         SimpleFeatureSource fs;
         fs = sfds.getFeatureSource("lesy_cr");
 
         ShapefileDataStore sfds2;
-        sfds2 = new ShapefileDataStore(new URL("file:///F:\\Škola\\test_data\\chranene_uzemi_cr.shp"));
+        sfds2 = new ShapefileDataStore(new URL("file:///F:\\GeoServer285\\data_dir\\data\\test_data\\chranene_uzemi_cr.shp"));
 
         SimpleFeatureSource fs2;
         fs2 = sfds2.getFeatureSource("chranene_uzemi_cr");
