@@ -8,7 +8,8 @@ public class Main {
 
         Process proc = new Process();
 
-        System.out.println(proc.overlayPolygons());
+//        System.out.println(proc.overlayPolygons());
+        System.out.println(proc.overlayPolygonsWithFilter());
     }
     
 }
