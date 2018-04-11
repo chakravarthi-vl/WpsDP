@@ -65,30 +65,28 @@ public class Process {
         ShapefileDataStore sfds2 = new ShapefileDataStore(new URL("file:///F:\\GeoServer285\\data_dir\\data\\test_data\\lesy_cr.shp"));
         SimpleFeatureSource fs2 = sfds2.getFeatureSource();
 
-        SimpleFeatureIterator sfi = fs.getFeatures().features();
-        double sum = 0;
-        while (sfi.hasNext()) {
-            SimpleFeature sf = sfi.next();
-            MultiPolygon mp2 = (MultiPolygon) sf.getDefaultGeometry();
-            Polygon p2 = (Polygon) mp2.getGeometryN(0);
-
-            SimpleFeatureIterator sfi2 = fs2.getFeatures().features();
-            while (sfi2.hasNext()) {
-                SimpleFeature sf2 = sfi2.next();
-                MultiPolygon mp3 = (MultiPolygon) sf2.getDefaultGeometry();
-                Polygon p3 = (Polygon) mp3.getGeometryN(0);
-                Geometry p4 = p2.intersection(p3);
-                if (p4.getArea() != 0) {
-                    sum += p4.getArea();
-                    areas = areas + "\n" + p4.getArea()+ " : " + p2.getArea() + " : " + p3.getArea();
+        double sum;
+        try (SimpleFeatureIterator sfi = fs.getFeatures().features()) {
+            sum = 0;
+            while (sfi.hasNext()) {
+                SimpleFeature sf = sfi.next();
+                MultiPolygon mp2 = (MultiPolygon) sf.getDefaultGeometry();
+                Polygon p2 = (Polygon) mp2.getGeometryN(0);
+                
+                try (SimpleFeatureIterator sfi2 = fs2.getFeatures().features()) {
+                    while (sfi2.hasNext()) {
+                        SimpleFeature sf2 = sfi2.next();
+                        MultiPolygon mp3 = (MultiPolygon) sf2.getDefaultGeometry();
+                        Polygon p3 = (Polygon) mp3.getGeometryN(0);
+                        Geometry p4 = p2.intersection(p3);
+                        if (p4.getArea() != 0) {
+                            sum += p4.getArea();
+                            areas = areas + "\n" + p4.getArea()+ " : " + p2.getArea() + " : " + p3.getArea();
+                        }
+                    }
                 }
             }
-            sfi2.close();
         }
-        sfi.close();
-        
-        sfds.dispose();
-        sfds2.dispose();
 
         return "Objects found: " + areas + "\nTotal sum: " + sum;
     }
