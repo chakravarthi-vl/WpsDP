@@ -120,11 +120,12 @@ public class Process {
             Filter filter = ff.intersects(ff.property("THE_GEOM"), ff.literal(sf.getDefaultGeometry()));
             
             SimpleFeatureIterator sfi2 = sfc.subCollection(filter).features();
-//            SimpleFeatureIterator sfi2 = sfcList.subCollection(filter).features();
+            // TODO while using ListFeatureCollection, FAIL ON ROW BELOW
+            //SimpleFeatureIterator sfi2 = sfcList.subCollection(filter).features();
             
             Polygon p2 = (Polygon) mp2.getGeometryN(0);
                 
-            // TODO FAIL ON ROW 130
+            // TODO FAIL ON ROW BELOW
             while (sfi2.hasNext()) {
                 SimpleFeature sf2 = sfi2.next();
                 MultiPolygon mp3 = (MultiPolygon) sf2.getDefaultGeometry();
