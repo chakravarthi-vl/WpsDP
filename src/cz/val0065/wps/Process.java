@@ -60,12 +60,12 @@ public class Process {
         String lengths = "Delky linii";
 
         ShapefileDataStore sfds1 = new ShapefileDataStore(
-                new URL("file:///C:\\GeoServer 2.8.5\\data_dir\\data\\sf\\restricted.shp"));
-        SimpleFeatureSource fs1 = sfds1.getFeatureSource("restricted");
+                new URL("file:///F:\\GeoServer285\\data_dir\\data\\test_data\\chranene_uzemi_cr.shp"));
+        SimpleFeatureSource fs1 = sfds1.getFeatureSource("chranene_uzemi_cr");
 
         ShapefileDataStore sfds2 = new ShapefileDataStore(
-                new URL("file:///C:\\GeoServer 2.8.5\\data_dir\\data\\sf\\streams.shp"));
-        SimpleFeatureSource fs2 = sfds2.getFeatureSource("streams");
+                new URL("file:///F:\\GeoServer285\\data_dir\\data\\test_data\\zeleznice_cr.shp"));
+        SimpleFeatureSource fs2 = sfds2.getFeatureSource("zeleznice_cr");
 
         double sum = 0;
 
@@ -77,6 +77,56 @@ public class Process {
                 Polygon p1 = (Polygon) mp1.getGeometryN(0);
 
                 try (SimpleFeatureIterator sfi2 = fs2.getFeatures().features()) {
+                    while (sfi2.hasNext()) {
+                        SimpleFeature sf2 = sfi2.next();
+                        MultiLineString mls = (MultiLineString) sf2.getDefaultGeometry();
+                        LineString ls = (LineString) mls.getGeometryN(0);
+                        Geometry result = p1.intersection(ls);
+                        if (result.getLength() != 0) {
+                            sum += result.getLength();
+                            lengths = lengths + "\n" + result.getLength();
+                        }
+                    }
+                }
+            }
+        }
+        return "Lines found: " + lengths + "\nSuma: " + sum;
+
+    }
+
+    public String lengthOfLineWithFilter() throws Exception {
+
+        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+
+        String lengths = "Delky linii";
+
+        ShapefileDataStore sfds1 = new ShapefileDataStore(
+                new URL("file:///F:\\GeoServer285\\data_dir\\data\\test_data\\chranene_uzemi_cr.shp"));
+        SimpleFeatureSource fs1 = sfds1.getFeatureSource("chranene_uzemi_cr");
+
+        ShapefileDataStore sfds2 = new ShapefileDataStore(
+                new URL("file:///F:\\GeoServer285\\data_dir\\data\\test_data\\zeleznice_cr.shp"));
+        SimpleFeatureSource fs2 = sfds2.getFeatureSource("zeleznice_cr");
+
+        SimpleFeatureCollection sfc = DataUtilities.collection(fs1.getFeatures());
+        SimpleFeatureCollection sfc2 = DataUtilities.collection(fs2.getFeatures());
+
+        ListFeatureCollection sfcList = new ListFeatureCollection(sfc);
+        ListFeatureCollection sfcList2 = new ListFeatureCollection(sfc);
+
+        double sum;
+        try (SimpleFeatureIterator sfi = sfcList.features()) {
+            sum = 0;
+            while (sfi.hasNext()) {
+                          
+                SimpleFeature sf = sfi.next();
+                MultiPolygon mp1 = (MultiPolygon) sf.getDefaultGeometry();
+                
+                Filter filter = ff.intersects(ff.property("the_geom"), ff.literal(sf.getDefaultGeometry()));
+                
+                Polygon p1 = (Polygon) mp1.getGeometryN(0);
+
+                try (SimpleFeatureIterator sfi2 = sfcList.subCollection(filter).features()) {
                     while (sfi2.hasNext()) {
                         SimpleFeature sf2 = sfi2.next();
                         MultiLineString mls = (MultiLineString) sf2.getDefaultGeometry();
@@ -155,7 +205,7 @@ public class Process {
         ListFeatureCollection sfcList2 = new ListFeatureCollection(sfc);
 
         double sum;
-        try (SimpleFeatureIterator sfi = sfcList2.features()) {
+        try (SimpleFeatureIterator sfi = sfcList.features()) {
             sum = 0;
             while (sfi.hasNext()) {
 
@@ -164,8 +214,9 @@ public class Process {
 
                 Filter filter = ff.intersects(ff.property("the_geom"), ff.literal(sf.getDefaultGeometry()));
 
+                Polygon p2 = (Polygon) mp2.getGeometryN(0);
+                
                 try (SimpleFeatureIterator sfi2 = sfcList.subCollection(filter).features()) {
-                    Polygon p2 = (Polygon) mp2.getGeometryN(0);
 
                     while (sfi2.hasNext()) {
                         SimpleFeature sf2 = sfi2.next();
