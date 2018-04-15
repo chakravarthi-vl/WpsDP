@@ -25,14 +25,16 @@ import org.opengis.filter.MultiValuedFilter;
 
 public class Process {
 
-    String overlay(String pointString, double distance, String shapeFileURL) throws MalformedURLException, IOException {
+    public String overlayPolygonWithBuffer(String pointString, double distance, String shapeFileURL)
+            throws MalformedURLException, IOException {
 
         String nazvy = "Objekt:Plocha prekryvu";
 
         ShapefileDataStore sfds;
         sfds = new ShapefileDataStore(new URL("file:///F:\\GeoServer285\\data_dir\\data\\sf\\restricted.shp"));
 
-        //ShapefileDataStoreFactory shpf = new ShapefileDataStoreFactory.ShpFileStoreFactory(new ShapefileDataStore);
+        // ShapefileDataStoreFactory shpf = new
+        // ShapefileDataStoreFactory.ShpFileStoreFactory(new ShapefileDataStore);
         SimpleFeatureSource fs;
         fs = sfds.getFeatureSource("restricted");
 
@@ -52,14 +54,54 @@ public class Process {
         }
         return "Nalezene: " + nazvy;
     }
-    
-    //ShapefileDataStoreFactory shpf = new ShapefileDataStoreFactory.ShpFileStoreFactory(new ShapefileDataStore);
 
-    String overlayPolygons() throws IOException {
+    public String lengthOfLine() throws Exception {
+
+        String lengths = "Delky linii";
+
+        ShapefileDataStore sfds1 = new ShapefileDataStore(
+                new URL("file:///C:\\GeoServer 2.8.5\\data_dir\\data\\sf\\restricted.shp"));
+        SimpleFeatureSource fs1 = sfds1.getFeatureSource("restricted");
+
+        ShapefileDataStore sfds2 = new ShapefileDataStore(
+                new URL("file:///C:\\GeoServer 2.8.5\\data_dir\\data\\sf\\streams.shp"));
+        SimpleFeatureSource fs2 = sfds2.getFeatureSource("streams");
+
+        double sum = 0;
+
+        try (SimpleFeatureIterator sfi = fs1.getFeatures().features()) {
+            while (sfi.hasNext()) {
+                sum = 0;
+                SimpleFeature sf = sfi.next();
+                MultiPolygon mp1 = (MultiPolygon) sf.getDefaultGeometry();
+                Polygon p1 = (Polygon) mp1.getGeometryN(0);
+
+                try (SimpleFeatureIterator sfi2 = fs2.getFeatures().features()) {
+                    while (sfi2.hasNext()) {
+                        SimpleFeature sf2 = sfi2.next();
+                        MultiLineString mls = (MultiLineString) sf2.getDefaultGeometry();
+                        LineString ls = (LineString) mls.getGeometryN(0);
+                        Geometry result = p1.intersection(ls);
+                        if (result.getLength() != 0) {
+                            sum += result.getLength();
+                            lengths = lengths + "\n" + result.getLength();
+                        }
+                    }
+                }
+            }
+        }
+        return "Lines found: " + lengths + "\nSuma: " + sum;
+
+    }
+
+    // ShapefileDataStoreFactory shpf = new
+    // ShapefileDataStoreFactory.ShpFileStoreFactory(new ShapefileDataStore);
+    public String overlayPolygons() throws IOException {
 
         String areas = "Object : Area of overlay";
 
-        ShapefileDataStore sfds = new ShapefileDataStore(new URL("file:///F:\\GeoServer285\\data_dir\\data\\test_data\\chranene_uzemi_cr.shp"));
+        ShapefileDataStore sfds = new ShapefileDataStore(
+                new URL("file:///F:\\GeoServer285\\data_dir\\data\\test_data\\chranene_uzemi_cr.shp"));
         SimpleFeatureSource fs = sfds.getFeatureSource();
 
         ShapefileDataStore sfds2 = new ShapefileDataStore(new URL("file:///F:\\GeoServer285\\data_dir\\data\\test_data\\lesy_cr.shp"));
@@ -72,7 +114,7 @@ public class Process {
                 SimpleFeature sf = sfi.next();
                 MultiPolygon mp2 = (MultiPolygon) sf.getDefaultGeometry();
                 Polygon p2 = (Polygon) mp2.getGeometryN(0);
-                
+
                 try (SimpleFeatureIterator sfi2 = fs2.getFeatures().features()) {
                     while (sfi2.hasNext()) {
                         SimpleFeature sf2 = sfi2.next();
@@ -81,7 +123,7 @@ public class Process {
                         Geometry p4 = p2.intersection(p3);
                         if (p4.getArea() != 0) {
                             sum += p4.getArea();
-                            areas = areas + "\n" + p4.getArea()+ " : " + p2.getArea() + " : " + p3.getArea();
+                            areas = areas + "\n" + p4.getArea() + " : " + p2.getArea() + " : " + p3.getArea();
                         }
                     }
                 }
@@ -90,83 +132,70 @@ public class Process {
 
         return "Objects found: " + areas + "\nTotal sum: " + sum;
     }
-    
-    String overlayPolygonsWithFilter() throws IOException {
-        
+
+    public String overlayPolygonsWithFilter() throws IOException {
+
+        long startTime = System.currentTimeMillis();
+
         FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
         String areas = "Object : Area of overlay";
 
-        ShapefileDataStore sfds = new ShapefileDataStore(new URL("file:///F:\\GeoServer285\\data_dir\\data\\test_data\\chranene_uzemi_cr.shp"));
+        ShapefileDataStore sfds = new ShapefileDataStore(
+                new URL("file:///F:\\GeoServer285\\data_dir\\data\\test_data\\chranene_uzemi_cr.shp"));
         SimpleFeatureSource fs = sfds.getFeatureSource();
 
         ShapefileDataStore sfds2 = new ShapefileDataStore(new URL("file:///F:\\GeoServer285\\data_dir\\data\\test_data\\lesy_cr.shp"));
         SimpleFeatureSource fs2 = sfds2.getFeatureSource();
-        
+
         SimpleFeatureCollection sfc = DataUtilities.collection(fs.getFeatures());
         SimpleFeatureCollection sfc2 = DataUtilities.collection(fs2.getFeatures());
-        
+
         ListFeatureCollection sfcList = new ListFeatureCollection(sfc);
         ListFeatureCollection sfcList2 = new ListFeatureCollection(sfc);
 
-        SimpleFeatureIterator sfi = sfcList2.features();
-        
-        double sum = 0;
-        while (sfi.hasNext()) {
-            
-            SimpleFeature sf = sfi.next();
-            MultiPolygon mp2 = (MultiPolygon) sf.getDefaultGeometry();
-            
-            Filter filter = ff.intersects(ff.property("THE_GEOM"), ff.literal(sf.getDefaultGeometry()));
-            
-            SimpleFeatureIterator sfi2 = sfc.subCollection(filter).features();
-            // TODO while using ListFeatureCollection, FAIL ON ROW BELOW
-            //SimpleFeatureIterator sfi2 = sfcList.subCollection(filter).features();
-            
-            Polygon p2 = (Polygon) mp2.getGeometryN(0);
-                
-            // TODO FAIL ON ROW BELOW
-            while (sfi2.hasNext()) {
-                SimpleFeature sf2 = sfi2.next();
-                MultiPolygon mp3 = (MultiPolygon) sf2.getDefaultGeometry();
-                Polygon p3 = (Polygon) mp3.getGeometryN(0);
-                Geometry p4 = p2.intersection(mp2);
-                if (p4.getArea() != 0) {
-                    sum += p4.getArea();
-                    areas = areas + "\n" + p4.getArea()+ " : " + p2.getArea() + " : " + p3.getArea();
+        double sum;
+        try (SimpleFeatureIterator sfi = sfcList2.features()) {
+            sum = 0;
+            while (sfi.hasNext()) {
+
+                SimpleFeature sf = sfi.next();
+                MultiPolygon mp2 = (MultiPolygon) sf.getDefaultGeometry();
+
+                Filter filter = ff.intersects(ff.property("the_geom"), ff.literal(sf.getDefaultGeometry()));
+
+                try (SimpleFeatureIterator sfi2 = sfcList.subCollection(filter).features()) {
+                    Polygon p2 = (Polygon) mp2.getGeometryN(0);
+
+                    while (sfi2.hasNext()) {
+                        SimpleFeature sf2 = sfi2.next();
+                        MultiPolygon mp3 = (MultiPolygon) sf2.getDefaultGeometry();
+                        Polygon p3 = (Polygon) mp3.getGeometryN(0);
+                        Geometry p4 = p2.intersection(mp2);
+                        if (p4.getArea() != 0) {
+                            sum += p4.getArea();
+                            areas = areas + "\n" + p4.getArea() + " : " + p2.getArea() + " : " + p3.getArea();
+                        }
+                    }
                 }
             }
-            sfi2.close();
         }
-        sfi.close();
-        
-        sfds.dispose();
-        sfds2.dispose();
+
+        long stopTime = System.currentTimeMillis();
+        long elapsedTime = stopTime - startTime;
+        System.out.println(elapsedTime);
 
         return "Objects found: " + areas + "\nTotal sum: " + sum;
-    }
-
-    public String lengthOfLine() throws Exception {
-
-        ShapefileDataStore sfds1;
-        sfds1 = new ShapefileDataStore(new URL("file:///F:\\GeoServer285\\data_dir\\data\\sf\\streams.shp"));
-        SimpleFeatureSource fs1;
-        fs1 = sfds1.getFeatureSource("streams");
-
-        SimpleFeatureIterator sfi = fs1.getFeatures().features();
-        while (sfi.hasNext()) {
-            SimpleFeature sf = sfi.next();
-
-        }
-        return null;
 
     }
 
-    SimpleFeatureCollection overlayWithOutput(String pointString, double distance) throws MalformedURLException, IOException {
+    SimpleFeatureCollection overlayWithOutput(String pointString, double distance)
+            throws MalformedURLException, IOException {
 
         SimpleFeatureCollection collection = null;
 
-        ShapefileDataStore sfds = new ShapefileDataStore(new URL("file:///F:\\GeoServer285\\data_dir\\data\\sf\\restricted.shp"));
+        ShapefileDataStore sfds = new ShapefileDataStore(
+                new URL("file:///F:\\GeoServer285\\data_dir\\data\\sf\\restricted.shp"));
         SimpleFeatureSource sfs = sfds.getFeatureSource("restricted");
 
         SimpleFeatureType type = sfs.getSchema();

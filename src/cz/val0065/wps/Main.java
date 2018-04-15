@@ -10,6 +10,7 @@ public class Main {
 
 //        System.out.println(proc.overlayPolygons());
         System.out.println(proc.overlayPolygonsWithFilter());
+//        System.out.println(proc.lengthOfLine());
     }
     
 }

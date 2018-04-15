@@ -12,6 +12,6 @@ public class OverlayWPS implements GeoServerProcess {
    @DescribeResult(name="result", description="output result")
    public String execute(@DescribeParameter(name="point", description="point") String point, @DescribeParameter(name="distance", description="distance to search") double distance) throws IOException {
        Process e = new Process();
-       return e.overlay(point, distance, "");
+       return e.overlayPolygonWithBuffer(point, distance, "");
    }
 }

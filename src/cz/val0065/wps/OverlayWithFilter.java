@@ -17,6 +17,6 @@ public class OverlayWithFilter implements GeoServerProcess {
     @DescribeResult(name="result", description="output result")
     public String execute() throws IOException{
         Process p = new Process();
-        return p.overlayPolygons();
+        return p.overlayPolygonsWithFilter();
     }    
 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
   <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
   <beans>
-    <bean id="helloWPS" class="cz.val0065.wps.HelloWorldWps"/>
     <bean id="OverlayPolygonsArea" class="cz.val0065.wps.OverlayWPS"/>
     <bean id="OverlayWithOutput" class="cz.val0065.wps.OverlayWithCollectionOutput"/>
     <bean id="OverlayPolygons" class="cz.val0065.wps.OverlayPolygons"/>
+    <bean id="OverlayPolygonsWithFilter" class="cz.val0065.wps.OverlayWithFilter"/>
   </beans>
